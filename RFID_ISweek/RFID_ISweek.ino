@@ -46,6 +46,8 @@ MFRC522::MIFARE_Key key;
 
 byte nuidPICC[4]; // Init array that will store new NUID 
 byte LockPICC[4]={0x14,0x0D,0x56,0x45}; // Init Lock 
+boolean state=false;
+byte time;
 
 void setup() 
 { 
@@ -85,10 +87,19 @@ void setup()
 	
 	Serial.print(F("Using the following key:"));
 	printHex(key.keyByte, MFRC522::MF_KEY_SIZE);
+	time=millis(); //Initial time , unit is ms .
 }
  
 void loop() 
 {
+	if(state==true && millis()-time>=5000) //5000ms = 5s
+	{
+		time=millis(); // Reset new time.
+		state=false;
+		digitalWrite(Close,HIGH);
+		digitalWrite(Open, LOW);
+		lockservo.write(40);
+	}
 	// Look for new cards
 	if ( ! rfid.PICC_IsNewCardPresent())
 	return;
@@ -138,6 +149,8 @@ void loop()
 				digitalWrite(Close, LOW);
 				digitalWrite(Open,HIGH);
 				lockservo.write(120);
+				state=true;
+				time=millis(); // Reset new time.
 			}
 			else
 			{
@@ -145,6 +158,7 @@ void loop()
 				digitalWrite(Close,HIGH);
 				digitalWrite(Open, LOW);
 				lockservo.write(40);
+				state=false;
 			}
 
 		}
