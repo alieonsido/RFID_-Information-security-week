@@ -47,7 +47,7 @@ MFRC522::MIFARE_Key key;
 byte nuidPICC[4]; // Init array that will store new NUID 
 byte LockPICC[4]={0x14,0x0D,0x56,0x45}; // Init Lock 
 short int state;
-byte time;
+int time;
 
 void setup() 
 { 
@@ -92,15 +92,16 @@ void setup()
  
 void loop() 
 {
-	if(state==1 && (millis()-time)>=12000) //5000ms = 5s
+	if(state==1 && (millis()-time) > 12000) 
 	{
+		Serial.println(time);
 		state=0;
 		digitalWrite(Close,HIGH);
 		digitalWrite(Open, LOW);
 		lockservo.write(40);
 	}
-	// Look for new cards
-	if ( ! rfid.PICC_IsNewCardPresent())
+
+	if ( ! rfid.PICC_IsNewCardPresent())// Look for new cards
 	return;
 
 	// Verify if the NUID has been readed
@@ -161,7 +162,27 @@ void loop()
 			}
 
 		}
-		else Serial.println(F("Card read previously."));
+		else
+		{
+			Serial.println(F("Card read previously."));
+			if(rfid.uid.uidByte[0] == nuidPICC[0] && rfid.uid.uidByte[1] == nuidPICC[1] && rfid.uid.uidByte[2] == nuidPICC[2] && rfid.uid.uidByte[3] == nuidPICC[3])
+			{
+       			Serial.println("Unlock!!!");
+				digitalWrite(Close, LOW);
+				digitalWrite(Open,HIGH);
+				lockservo.write(120);
+				state=1;
+				time=millis(); // Reset new time.
+			}
+			else
+			{
+		        Serial.println("Unlock error!!!");
+				digitalWrite(Close,HIGH);
+				digitalWrite(Open, LOW);
+				lockservo.write(40);
+				state=0;
+			}
+		} 
 	}
 	else
 	{
