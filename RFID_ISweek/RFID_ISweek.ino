@@ -46,7 +46,7 @@ MFRC522::MIFARE_Key key;
 
 byte nuidPICC[4]; // Init array that will store new NUID 
 byte LockPICC[4]={0x14,0x0D,0x56,0x45}; // Init Lock 
-boolean state=false;
+short int state;
 byte time;
 
 void setup() 
@@ -92,9 +92,8 @@ void setup()
  
 void loop() 
 {
-	if(state==true && millis()-time>=5000) //5000ms = 5s
+	if(state==1 && (millis()-time)>=12000) //5000ms = 5s
 	{
-		time=millis(); // Reset new time.
 		state=false;
 		digitalWrite(Close,HIGH);
 		digitalWrite(Open, LOW);
@@ -149,7 +148,7 @@ void loop()
 				digitalWrite(Close, LOW);
 				digitalWrite(Open,HIGH);
 				lockservo.write(120);
-				state=true;
+				state=1;
 				time=millis(); // Reset new time.
 			}
 			else
@@ -158,7 +157,7 @@ void loop()
 				digitalWrite(Close,HIGH);
 				digitalWrite(Open, LOW);
 				lockservo.write(40);
-				state=false;
+				state=0;
 			}
 
 		}
