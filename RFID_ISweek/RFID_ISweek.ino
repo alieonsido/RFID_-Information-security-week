@@ -92,14 +92,15 @@ void setup()
  
 void loop() 
 {
-	if(state==1 && (millis()-time) > 12000) 
+	/*if(state==1 && (millis()-time) > 12000) 
 	{
 		Serial.println(time);
+		time = millis(); //Initial.
 		state=0;
 		digitalWrite(Close,HIGH);
 		digitalWrite(Open, LOW);
 		lockservo.write(40);
-	}
+	}*/
 
 	if ( ! rfid.PICC_IsNewCardPresent())// Look for new cards
 	return;
@@ -159,6 +160,7 @@ void loop()
 				digitalWrite(Open, LOW);
 				lockservo.write(40);
 				state=0;
+				time=millis(); // Reset new time.
 			}
 
 		}
@@ -181,6 +183,7 @@ void loop()
 				digitalWrite(Open, LOW);
 				lockservo.write(40);
 				state=0;
+				time=millis(); // Reset new time.
 			}
 		} 
 	}
