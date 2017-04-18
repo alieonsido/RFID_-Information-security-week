@@ -94,7 +94,7 @@ void loop()
 {
 	if(state==1 && (millis()-time)>=12000) //5000ms = 5s
 	{
-		state=false;
+		state=0;
 		digitalWrite(Close,HIGH);
 		digitalWrite(Open, LOW);
 		lockservo.write(40);
